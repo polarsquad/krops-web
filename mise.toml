@@ -18,7 +18,3 @@ run = "uv run mkdocs build --strict"
 description = "Assemble and serve the site with live reload"
 depends = ["assemble"]
 run = "uv run mkdocs serve"
-
-[tasks.image]
-description = "Build the container image locally"
-run = "docker build -t krops-web:dev ."
