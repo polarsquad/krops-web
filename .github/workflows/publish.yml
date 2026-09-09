@@ -89,18 +89,27 @@ jobs:
             cosign sign --yes "${ref}"
           done
 
-      - name: Attach SBOM (Syft) to the digest
+      - name: Attach per-platform SBOMs (Syft)
         env:
           DIGEST: ${{ steps.build.outputs.digest }}
         run: |
-          ref="ghcr.io/polarsquad/krops-web@${DIGEST}"
-          syft "${ref}" -o spdx-json > sbom.json
-          cosign attest --yes --predicate sbom.json --type spdxjson "${ref}"
-          echo "SBOM attested to ${ref}"
+          # The build pushes a multi-arch index. Syft catalogs one platform
+          # when given an index reference, so resolve the index to its
+          # platform manifests and scan and attest each one separately:
+          # every published architecture gets an SBOM on its own digest.
+          repo=ghcr.io/polarsquad/krops-web
+          docker buildx imagetools inspect --raw "${repo}@${DIGEST}" \
+            | jq -r '.manifests[] | select(.platform.os == "linux") | "\(.platform.architecture) \(.digest)"' \
+            | while read -r arch manifest_digest; do
+                ref="${repo}@${manifest_digest}"
+                syft "${ref}" -o spdx-json > "sbom-${arch}.json"
+                cosign attest --yes --predicate "sbom-${arch}.json" --type spdxjson "${ref}"
+                echo "SBOM for linux/${arch} attested to ${ref}"
+              done
 
-      - name: Upload SBOM artifact
+      - name: Upload SBOM artifacts
         uses: actions/upload-artifact@v7.0.1
         with:
           name: krops-web-sbom-spdx
-          path: sbom.json
+          path: sbom-*.json
           retention-days: 30
