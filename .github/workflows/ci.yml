@@ -4,7 +4,10 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [main]
+    # renovate/**: automergeType=branch waits for these checks on the
+    # Renovate branch before committing to main; without this trigger the
+    # branch never goes green.
+    branches: [main, "renovate/**"]
 
 permissions:
   contents: read
