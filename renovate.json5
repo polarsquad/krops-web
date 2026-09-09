@@ -5,6 +5,7 @@
     ":semanticCommits",
     ":dependencyDashboard",
     "docker:pinDigests",
+    "helpers:pinGitHubActionDigests",
   ],
   // The site content is the polarsquad/krops submodule; a new upstream commit
   // is a docs update, so it merges without a review round trip once CI passes.
