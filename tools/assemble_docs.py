@@ -38,3 +38,15 @@ def rewrite_readme_links(text: str) -> str:
         return f"{pre}{github_url(target)}{post}"
 
     return LINK_RE.sub(sub, text)
+
+
+def rewrite_doc_links(text: str) -> str:
+    """docs/*.md stay at the docs root; only ../ links leave the documentation -> GitHub."""
+
+    def sub(match: re.Match[str]) -> str:
+        pre, target, post = match.groups()
+        if _is_external(target) or not target.startswith("../"):
+            return match.group(0)
+        return f"{pre}{github_url(target[len('../'):])}{post}"
+
+    return LINK_RE.sub(sub, text)
