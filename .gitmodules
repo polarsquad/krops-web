@@ -1,0 +1,3 @@
+[submodule "deps/krops"]
+	path = deps/krops
+	url = https://github.com/polarsquad/krops.git
