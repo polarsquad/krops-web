@@ -57,7 +57,12 @@ jobs:
         run: |
           set -eu
           docker run -d --rm --name smoke --read-only --tmpfs /tmp -p 8080:8080 krops-web:ci
-          for _ in $(seq 1 20); do curl -fs http://127.0.0.1:8080/healthz && break; sleep 0.5; done
+          healthy=0
+          for _ in $(seq 1 20); do
+            if curl -fs http://127.0.0.1:8080/healthz; then healthy=1; break; fi
+            sleep 0.5
+          done
+          test "$healthy" = 1
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/)" = 200
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/architecture/)" = 200
           test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/does-not-exist)" = 404
