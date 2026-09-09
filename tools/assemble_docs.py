@@ -9,6 +9,8 @@ GitHub (files that are not part of the documentation).
 from __future__ import annotations
 
 import re
+import shutil
+from pathlib import Path
 
 GITHUB = "https://github.com/polarsquad/krops"
 
@@ -50,3 +52,30 @@ def rewrite_doc_links(text: str) -> str:
         return f"{pre}{github_url(target[len('../'):])}{post}"
 
     return LINK_RE.sub(sub, text)
+
+
+ROOT = Path(__file__).resolve().parent.parent
+KROPS = ROOT / "deps" / "krops"
+SRC = ROOT / "src"
+OUT = ROOT / "build" / "docs"
+
+
+def assemble(krops: Path = KROPS, src: Path = SRC, out: Path = OUT) -> Path:
+    """Recreate `out`: README -> index.md, docs/*.md and docs/*.svg, then the src/ overlay."""
+    if out.exists():
+        shutil.rmtree(out)
+    out.mkdir(parents=True)
+    (out / "index.md").write_text(rewrite_readme_links((krops / "README.md").read_text()))
+    for path in sorted((krops / "docs").iterdir()):
+        if path.suffix == ".md":
+            (out / path.name).write_text(rewrite_doc_links(path.read_text()))
+        elif path.suffix == ".svg":
+            shutil.copy2(path, out / path.name)
+    shutil.copytree(src, out, dirs_exist_ok=True)
+    return out
+
+
+if __name__ == "__main__":
+    result = assemble()
+    count = sum(1 for p in result.rglob("*") if p.is_file())
+    print(f"assembled {count} files into {result}")
