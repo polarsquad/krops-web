@@ -1,5 +1,5 @@
 [tools]
-uv = "0.12.1"
+uv = "0.12.13"
 
 [tasks.assemble]
 description = "Copy the krops submodule docs into build/docs with rewritten links"
