@@ -17,7 +17,7 @@ RUN uv run --no-sync python tools/assemble_docs.py \
 
 # Stage 2: serve it. nginx-unprivileged runs as uid 101, listens on 8080,
 # and keeps pid/cache under /tmp, so the root filesystem can be read-only.
-FROM docker.io/nginxinc/nginx-unprivileged:1.31-alpine@sha256:19c132c9ab02d3b783f478743dafc7a7f42e27aa7d2bdcbec1bb1128ca8f2a07
+FROM docker.io/nginxinc/nginx-unprivileged:1.31-alpine@sha256:b54ac358b83fc6c965793fd271839b4ea4cdb6e99895bb19618cbc2ca152d972
 COPY docker/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /work/build/site/ /usr/share/nginx/html/
 EXPOSE 8080
