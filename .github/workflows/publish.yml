@@ -71,7 +71,7 @@ jobs:
         uses: sigstore/cosign-installer@v4.1.2
 
       - name: Install syft
-        uses: anchore/sbom-action/download-syft@v0.24.2
+        uses: anchore/sbom-action/download-syft@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
 
       - name: Sign the image (keyless, workflow identity)
         env:
