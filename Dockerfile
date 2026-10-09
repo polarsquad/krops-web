@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # Stage 1: build the static site with MkDocs.
-FROM docker.io/library/python:3.14-slim@sha256:f85c5697265c178cc6887276c55fe16cf3d14ca35c3df6a5eab3b360534a55d2 AS build
+FROM docker.io/library/python:3.14-slim@sha256:a2b82f3c48559aa0a8446d9af49826b6e2b2016f4cd2afabfe6013ec53729170 AS build
 COPY --from=ghcr.io/astral-sh/uv:0.12.24@sha256:3af4716e991d6956a41e573eab705d0ee08500cd829ed30293eb8472f372c65a /uv /bin/uv
 WORKDIR /work
 ENV UV_LINK_MODE=copy UV_PYTHON_DOWNLOADS=never
